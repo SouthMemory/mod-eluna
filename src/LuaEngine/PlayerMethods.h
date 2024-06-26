@@ -3943,6 +3943,21 @@ namespace LuaPlayer
     }
 
     /**
+     * set the [Player]s custom data's key to value
+     *
+     * @param str key
+     * @param str value
+     */
+    int SetCustomData(lua_State* L, Player* player)
+    {
+        const char* key = Eluna::CHECKVAL<const char*>(L, 2);
+        const char* value = Eluna::CHECKVAL<const char*>(L, 3);
+
+        player->SetCustomData(key, value);
+        return 0;
+    }
+
+    /**
     * Adds a glyph specified by `glyphId` to the [Player]'s current talent specialization into the slot with the index `slotIndex`
     *
     * @param uint32 glyphId

@@ -702,6 +702,7 @@ ElunaRegister<Player> PlayerMethods[] =
     { "ModifyMoney", &LuaPlayer::ModifyMoney },
     { "LearnSpell", &LuaPlayer::LearnSpell },
     { "LearnTalent", &LuaPlayer::LearnTalent },
+    { "SetCustomData", &LuaPlayer::SetCustomData },
     { "SetGlyph", &LuaPlayer::SetGlyph },
 #if !defined(CLASSIC)
     { "RemoveArenaSpellCooldowns", &LuaPlayer::RemoveArenaSpellCooldowns },
