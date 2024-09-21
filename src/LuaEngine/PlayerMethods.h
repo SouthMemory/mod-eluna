@@ -7,9 +7,7 @@
 #ifndef PLAYERMETHODS_H
 #define PLAYERMETHODS_H
 
-#include "Chat.h"
 #include "GameTime.h"
-#include "GossipDef.h"
 
 /***
  * Inherits all methods from: [Object], [WorldObject], [Unit]
@@ -3810,7 +3808,7 @@ namespace LuaPlayer
     {
         std::string msg = Eluna::CHECKVAL<std::string>(L, 2);
         if (msg.length() > 0)
-            ChatHandler(player->GetSession()).SendNotification("{}", msg);
+            player->GetSession()->SendNotification("%s", msg.c_str());
         return 0;
     }
 
@@ -3943,25 +3941,6 @@ namespace LuaPlayer
 #endif
         return 0;
     }
-    /**
-    * Run a chat command as if the player typed it into the chat
-    *
-    * @param string command: text to display in chat or console
-    */
-    int RunCommand(lua_State* L, Player* player)
-    {
-        auto command = Eluna::CHECKVAL<std::string>(L, 2);
-
-        // In _ParseCommands which is used below no leading . or ! is allowed for the command string.
-        if (command[0] == '.' || command[0] == '!') {
-            command = command.substr(1);
-        }
-
-        auto handler = ChatHandler(player->GetSession());
-        handler._ParseCommands(command);
-
-        return 0;
-    }
 
     /**
      * set the [Player]s custom data's key to value
@@ -3993,18 +3972,6 @@ namespace LuaPlayer
         player->SendTalentsInfoData(false); // Also handles GlyphData
 
         return 0;
-    }
-
-    /**
-    * Get glyphId of the glyph slot specified by `slotIndex` off the [Player]'s current talent specialization.`
-    * @param uint32 slotIndex
-    * @return glyphId of the glyph in the selected glyph slot or 0 in case the glyph slot is empty
-    */
-    int GetGlyph(lua_State* L, Player* player)
-    {
-        auto slotIndex = Eluna::CHECKVAL<uint32>(L, 2);
-        Eluna::Push(L,player->GetGlyph(slotIndex));
-        return 1;
     }
 
 #if !defined(CLASSIC)
@@ -4061,15 +4028,7 @@ namespace LuaPlayer
         const char* _promptMsg = Eluna::CHECKVAL<const char*>(L, 7, "");
         uint32 _money = Eluna::CHECKVAL<uint32>(L, 8, 0);
 #if defined TRINITY || AZEROTHCORE
-        if (player->PlayerTalkClass->GetGossipMenu().GetMenuItemCount() < GOSSIP_MAX_MENU_ITEMS)
-        {
-            player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, _icon, msg, _sender, _intid, _promptMsg, _money,
-                                                                 _code);
-        }
-        else
-        {
-            return luaL_error(L, "GossipMenuItem not added. Reached Max amount of possible GossipMenuItems in this GossipMenu");
-        }
+        player->PlayerTalkClass->GetGossipMenu().AddMenuItem(-1, _icon, msg, _sender, _intid, _promptMsg, _money, _code);
 #else
 #ifndef CLASSIC
         player->PlayerTalkClass->GetGossipMenu().AddMenuItem(_icon, msg, _sender, _intid, _promptMsg, _money, _code);
